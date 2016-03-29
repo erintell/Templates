@@ -34,13 +34,18 @@
         "2012-Datacenter",
         "2012-R2-Datacenter"
       ],
+      "sizeOfDiskInGB": {
+        "type": "string",
+        "metadata": {
+          "description": "Size of the empty data disk in GB"
+        }
       "metadata": {
         "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version. Allowed values: 2008-R2-SP1, 2012-Datacenter, 2012-R2-Datacenter."
       }
     }
   },
   "variables": {
-    "location": "West US",
+   
     "imagePublisher": "MicrosoftWindowsServer",
     "imageOffer": "WindowsServer",
     "OSDiskName": "osdiskforwindowssimple",
@@ -57,6 +62,8 @@
     "virtualNetworkName": "MyVNET",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]"
+    "dataDisk1VHDName":
+      "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('vMName'),'dataDisk1.vhd')]"
   },
   "resources": [
     {
@@ -145,6 +152,16 @@
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
+        "datadisks":
+          {
+            "name": "datadisk1",
+            "diskSizeGB": "[parameters('sizeOfDiskInGB'}]",
+            "lun": 0,
+            "vhd" : {
+              "Uri": "[variables('dataDiskVhdName')]"
+            },
+            "creatOption": "Empty"
+          }
         "storageProfile": {
           "imageReference": {
             "publisher": "[variables('imagePublisher')]",
@@ -161,6 +178,7 @@
             "createOption": "FromImage"
           }
         },
+        
         "networkProfile": {
           "networkInterfaces": [
             {
